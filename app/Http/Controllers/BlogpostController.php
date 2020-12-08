@@ -14,7 +14,7 @@ class BlogpostController extends Controller
      */
     public function index()
     {
-        //
+        return Blogpost::orderByDesc("updated_at")->get();
     }
 
     /**
@@ -25,7 +25,26 @@ class BlogpostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            "author_id" => ["integer", "nullable"], // TODO set auto to Auth::id
+            "title" => ["required", "string"],
+            "content" => ["required", "string"],
+        ]);
+
+        if (
+            Blogpost::create([
+                "author_id" => $request->author_id,
+                "title" => $request->title,
+                "content" => $request->content,
+            ])
+        ) {
+            return response()->json(
+                [
+                    "success" => "Nouveau post de blog créé avec succès",
+                ],
+                200
+            );
+        }
     }
 
     /**
@@ -36,7 +55,7 @@ class BlogpostController extends Controller
      */
     public function show(Blogpost $blogpost)
     {
-        //
+        return $blogpost;
     }
 
     /**
@@ -48,7 +67,26 @@ class BlogpostController extends Controller
      */
     public function update(Request $request, Blogpost $blogpost)
     {
-        //
+        $request->validate([
+            "author_id" => ["integer", "nullable"], // TODO set auto to Auth::id
+            "title" => ["required", "string"],
+            "content" => ["required", "string"],
+        ]);
+
+        if (
+            $blogpost->update([
+                "author_id" => $request->author_id,
+                "title" => $request->title,
+                "content" => $request->content,
+            ])
+        ) {
+            return response()->json(
+                [
+                    "success" => "Post de blog modifié avec succès",
+                ],
+                200
+            );
+        }
     }
 
     /**
@@ -59,6 +97,13 @@ class BlogpostController extends Controller
      */
     public function destroy(Blogpost $blogpost)
     {
-        //
+        $blogpost->delete();
+        return response()->json(
+            [
+                "success" => "Post de blog supprimé avec succès",
+            ],
+            200
+        );
+        // return redirect()->route(ROUTE.TO.BLOGPOSTS.INDEX)->with('success', "XXX has been deleted");    // TODO
     }
 }
