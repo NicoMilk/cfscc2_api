@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\BlogpostController;
@@ -19,10 +20,29 @@ use App\Http\Controllers\BlogpostController;
 
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 
-// vvv décommenter si Route::resource ne fonctionne pas, effacer si OK vvv
-// Route::get("/user", [UserController::class, "index"]);
-// Route::post("/user", [UserController::class, "store"]);
+Route::post("/login", [AuthController::class, "login"]);
 
-Route::resource("user", UserController::class);
-Route::resource("event", EventController::class);
-Route::resource("blogpost", BlogpostController::class);
+Route::apiResource("/user", UserController::class)->only(["store"]);
+Route::apiResource("/event", EventController::class)->only(["index", "show"]);
+Route::apiResource("/blogpost", BlogpostController::class)->only([
+    "index",
+    "show",
+]);
+
+Route::group(["middleware" => ["auth:sanctum"]], function () {
+    Route::apiResource("/user", UserController::class)->except(["store"]);
+
+    Route::get("/me", [AuthController::class, "whoami"]);
+
+    Route::apiResource("/event", EventController::class)->except([
+        "index",
+        "show",
+    ]);
+
+    Route::apiResource("/blogpost", BlogpostController::class)->except([
+        "index",
+        "show",
+    ]);
+
+    Route::post("/logout", [AuthController::class, "logout"]);
+});
