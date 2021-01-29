@@ -22,24 +22,24 @@ use App\Http\Controllers\BlogpostController;
 
 Route::post("/login", [AuthController::class, "login"]);
 
-Route::apiResource("/user", UserController::class)->only(["store"]);
-Route::apiResource("/event", EventController::class)->only(["index", "show"]);
-Route::apiResource("/blogpost", BlogpostController::class)->only([
+Route::apiResource("/users", UserController::class)->only(["store"]);
+Route::apiResource("/events", EventController::class)->only(["index", "show"]);
+Route::apiResource("/blogposts", BlogpostController::class)->only([
     "index",
     "show",
 ]);
 
 Route::group(["middleware" => ["auth:sanctum"]], function () {
-    Route::apiResource("/user", UserController::class)->except(["store"]);
+    Route::apiResource("/users", UserController::class)->except(["store"]);
 
     Route::get("/me", [AuthController::class, "whoami"]);
 
-    Route::apiResource("/event", EventController::class)->except([
+    Route::apiResource("/events", EventController::class)->except([
         "index",
         "show",
     ]);
 
-    Route::apiResource("/blogpost", BlogpostController::class)->except([
+    Route::apiResource("/blogposts", BlogpostController::class)->except([
         "index",
         "show",
     ]);
